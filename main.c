@@ -86,8 +86,8 @@ void goToStart() {
     //drawFullscreenImage4(buzzBitmap);
 
     //TODO 2.1: Wait for vertical blank and flip the page (you don't need to reload the palette)
-
-
+    waitForVBlank();
+    flipPage();
 
     state = START;
 
@@ -149,8 +149,8 @@ void goToPause() {
     drawString4(120-15, 80-3, "Pause", BLACKID);
 
     //TODO 2.2: Wait for vertical blank and flip the page
-
-
+    waitForVBlank();
+    flipPage();
 
     state = PAUSE;
 }
@@ -175,8 +175,8 @@ void goToWin() {
     drawString4(120-9, 80-3, "Win", BLACKID);
 
     //TODO 2.3: Wait for vertical blank and flip the page
-
-
+    waitForVBlank();
+    flipPage();
 
     state = WIN;
 }
@@ -199,8 +199,8 @@ void goToLose() {
     drawString4(120-12, 80-3, "Lose", BLACKID);
 
     //TODO 2.4: Wait for vertical blank and flip the page
-
-
+    waitForVBlank();
+    flipPage();
 
     state = LOSE;
 }

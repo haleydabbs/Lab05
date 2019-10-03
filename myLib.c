@@ -14,12 +14,21 @@ void setPixel3(int col, int row, unsigned short color) {
 
 // Set a pixel on the screen in Mode 4
 void setPixel4(int col, int row, unsigned char colorIndex) {
-
     // TODO 1.0: Write this function
 
+    unsigned short pData = videoBuffer[OFFSET(col, row, SCREENWIDTH)/2];
 
+    // if odd (pixel on left of the 16 bits)
+    if (col & 1) {
+        pData &= 0x00FF;
+        pData |= (colorIndex << 8);
+    } // if even (pixel on right of the 16 bits)
+    else {
+        pData &= 0xFF00;
+        pData |= colorIndex;
+    }
 
-
+    videoBuffer[OFFSET(col, row, SCREENWIDTH)/2] = pData;
 
 }
 
@@ -62,6 +71,10 @@ void fillScreen4(volatile unsigned char colorIndex) {
 
     // TODO 2.0: Write this function using DMA
 
+    // Use pData to create 16 bit representation of color
+    // - Can write to 2 pixels at a time
+    volatile unsigned short pData = colorIndex | (colorIndex << 8);
+    DMANow(3, &pData, videoBuffer, ((SCREENHEIGHT * SCREENWIDTH / 2) | DMA_DESTINATION_INCREMENT | DMA_SOURCE_FIXED));
 
 }
 

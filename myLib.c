@@ -45,6 +45,38 @@ void drawRect4(int col, int row, int width, int height, volatile unsigned char c
 
     // TODO 5.0: Write this function using DMA
 
+    // Width - something (case dependent) is > 1 for DMA length
+
+    if (!(col & 1) && !(width & 1)) {
+    
+    //  If col and width are even - DMA everything
+        for (int y = 0; y < height; y++) {
+            DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | (width/2));
+        }
+
+    } else if (!(col & 1) && (width & 1)) {
+
+    // If col is even but width is odd
+    // DMA start of rect
+        for (int y = 0; y < height; y++) {
+            DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | (width/2));
+        }
+    // SetPixel4 for the last column (Left side of last 16 bits)
+
+    } else if ((col & 1) && (width & 1)) {
+
+    // If both col and width are odd
+    // SetPixel4 for the beginning (Right side of first 16 bits)
+    // DMA end of rect
+
+    } else if ((col & 1) && !(width & 1)) {
+
+    // If col is odd but width is even
+    // SetPixel4 for for the beginning (Right side of first 16 bits)
+    // DMA middle of rect
+    // SetPixel4 for the end (Left side of last 16 bits)
+    
+    }
 
 
 
@@ -90,7 +122,10 @@ void drawImage3(int col, int row, int width, int height, const unsigned short *i
 void drawImage4(int col, int row, int width, int height, const unsigned short *image) {
 
     // TODO 4.0: Write this function using DMA
-
+    // add offset for image
+    for (int y = 0; y < height; y++) {
+        DMANow(3, &image[(OFFSET(0, y, width/2))], &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], (width/2));
+    }
 
 }
 
@@ -104,6 +139,7 @@ void drawFullscreenImage3(const unsigned short *image) {
 void drawFullscreenImage4(const unsigned short *image) {
 
     // TODO 3.0: Write this function using DMA
+    DMANow(3, image, videoBuffer, ((SCREENHEIGHT * SCREENWIDTH / 2) | DMA_DESTINATION_INCREMENT | DMA_SOURCE_INCREMENT));
 
 }
 

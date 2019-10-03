@@ -2,6 +2,7 @@
 #include "myLib.h"
 #include "game.h"
 // TODO 4.3: Include pumpkin.h
+#include "pumpkin.h"
 
 
 // Variables
@@ -24,7 +25,7 @@ void initGame() {
     unsigned short colors[NUMCOLORS] = {BLACK, BLUE, GREEN, RED, WHITE, GRAY};
 
     //TODO 4.2: Load the pumpkin image's colors
-
+    DMANow(3, pumpkinPal, PALETTE, (256 | DMA_DESTINATION_INCREMENT | DMA_SOURCE_INCREMENT));
 
     // Load the custom game colors to the end
     for (int i = 0; i < NUMCOLORS; i++) {
@@ -232,10 +233,10 @@ void updateBall(BALL* b) {
 void drawBall(BALL* b) {
 
 	// UNCOMMENT 4.0
-	// if(b->active) {
-	// 	if (b->isPumpkin)
-	// 		drawImage4(b->col, b->row, b->width, b->height, pumpkinBitmap);
-	// 	else
-	// 		drawRect4(b->col, b->row, b->width, b->height, BLUEID);
-	// }
+	if(b->active) {
+		if (b->isPumpkin)
+			drawImage4(b->col, b->row, b->width, b->height, pumpkinBitmap);
+		else
+			drawRect4(b->col, b->row, b->width, b->height, BLUEID);
+	}
 }

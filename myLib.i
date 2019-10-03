@@ -90,7 +90,7 @@ void drawRect3(int col, int row, int width, int height, volatile unsigned short 
 
 
 void drawRect4(int col, int row, int width, int height, volatile unsigned char colorIndex) {
-# 61 "myLib.c"
+# 62 "myLib.c"
 }
 
 
@@ -124,6 +124,9 @@ void drawImage4(int col, int row, int width, int height, const unsigned short *i
 
 
 
+    for (int y = 0; y < height; y++) {
+        DMANow(3, &image[(((y)*(width/2)+(0)))], &videoBuffer[(((row + y)*(240)+(col))/2)], (width/2));
+    }
 
 }
 
@@ -137,6 +140,7 @@ void drawFullscreenImage3(const unsigned short *image) {
 void drawFullscreenImage4(const unsigned short *image) {
 
 
+    DMANow(3, image, videoBuffer, ((160 * 240 / 2) | (0 << 21) | (0 << 23)));
 
 }
 

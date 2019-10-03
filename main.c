@@ -4,6 +4,7 @@
 #include "text.h"
 #include "game.h"
 // TODO 3.4: Include buzz.h
+#include "buzz.h"
 
 
 // Prototypes
@@ -81,9 +82,10 @@ void initialize() {
 void goToStart() {
 
     //TODO 3.5: Call DMANow to load in buzzPal
+    DMANow(3, buzzPal, PALETTE, (256 | DMA_DESTINATION_INCREMENT | DMA_SOURCE_INCREMENT));
 
     // UNCOMMENT 3.0
-    //drawFullscreenImage4(buzzBitmap);
+    drawFullscreenImage4(buzzBitmap);
 
     //TODO 2.1: Wait for vertical blank and flip the page (you don't need to reload the palette)
     waitForVBlank();

@@ -1348,6 +1348,13 @@ void updateBall(BALL *);
 void drawBall(BALL *);
 # 6 "main.c" 2
 
+# 1 "buzz.h" 1
+# 21 "buzz.h"
+extern const unsigned short buzzBitmap[19200];
+
+
+extern const unsigned short buzzPal[256];
+# 8 "main.c" 2
 
 
 
@@ -1425,9 +1432,10 @@ void initialize() {
 void goToStart() {
 
 
+    DMANow(3, buzzPal, ((unsigned short *)0x5000000), (256 | (0 << 21) | (0 << 23)));
 
 
-
+    drawFullscreenImage4(buzzBitmap);
 
 
     waitForVBlank();

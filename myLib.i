@@ -90,7 +90,76 @@ void drawRect3(int col, int row, int width, int height, volatile unsigned short 
 
 
 void drawRect4(int col, int row, int width, int height, volatile unsigned char colorIndex) {
-# 62 "myLib.c"
+
+
+
+
+
+    if (!(col & 1) && !(width & 1)) {
+
+
+        for (int y = 0; y < height; y++) {
+            DMANow(3, &colorIndex, &videoBuffer[(((row + y)*(240)+(col))/2)], (2 << 23) | (width/2));
+        }
+
+    } else if (!(col & 1) && (width & 1)) {
+
+
+
+        if (width > 1) {
+            for (int y = 0; y < height; y++) {
+
+                DMANow(3, &colorIndex, &videoBuffer[(((row + y)*(240)+(col))/2)], (2 << 23) | ((width)));
+
+                setPixel4(col + width - 1, row + y, colorIndex);
+            }
+        } else if (width == 1) {
+
+            for (int y = 0; y < height; y++) {
+
+                setPixel4(col, row + y, colorIndex);
+            }
+        }
+
+    } else if ((col & 1) && (width & 1)) {
+
+
+        if (width > 1) {
+            for (int y = 0; y < height; y++) {
+
+                DMANow(3, &colorIndex, &videoBuffer[(((row + y)*(240)+(col + 1))/2)], (2 << 23) | ((width - 1)/2));
+
+                setPixel4(col, row + y, colorIndex);
+            }
+        } else if (width == 1) {
+
+            for (int y = 0; y < height; y++) {
+                setPixel4(col, row + y, colorIndex);
+            }
+        }
+
+    } else if ((col & 1) && !(width & 1)) {
+
+
+        if (width > 2) {
+            for (int y = 0; y < height; y++) {
+
+                setPixel4(col, row + y, colorIndex);
+
+                DMANow(3, &colorIndex, &videoBuffer[(((row + y)*(240)+(col + 1))/2)], (2 << 23) | ((width - 1)/2));
+
+                setPixel4(col + width - 1, row + y, colorIndex);
+            }
+        } else if (width == 2) {
+            for (int y = 0; y < height; y++) {
+
+                setPixel4(col, row + y, colorIndex);
+
+                setPixel4(col + width - 1, row + y, colorIndex);
+            }
+        }
+    }
+# 127 "myLib.c"
 }
 
 

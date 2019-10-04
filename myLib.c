@@ -49,33 +49,67 @@ void drawRect4(int col, int row, int width, int height, volatile unsigned char c
 
     if (!(col & 1) && !(width & 1)) {
     
-    //  If col and width are even - DMA everything
+        //  If col and width are even - DMA everything no problemo
         for (int y = 0; y < height; y++) {
             DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | (width/2));
         }
 
     } else if (!(col & 1) && (width & 1)) {
+      // If col is even but width is odd
 
-    // If col is even but width is odd
-    // DMA start of rect
-        for (int y = 0; y < height; y++) {
-            DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | (width/2));
+        // Check for edge case, if width == 1 then don't DMA at all
+        if (width > 1) {
+            for (int y = 0; y < height; y++) {
+                // DMA for start of rectangle
+                DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
+                // SetPixel4 for the last column (Left side of last 16 bits)
+                setPixel4(col + width - 1, row + y, colorIndex);
+            }
+        } else if (width == 1) {
+            // Edge case, you have a 1px rectangle - don't use DMA
+            for (int y = 0; y < height; y++) {
+                // SetPixel4
+                setPixel4(col, row + y, colorIndex);
+            }
         }
-    // SetPixel4 for the last column (Left side of last 16 bits)
 
     } else if ((col & 1) && (width & 1)) {
 
     // If both col and width are odd
-    // SetPixel4 for the beginning (Right side of first 16 bits)
-    // DMA end of rect
+        if (width > 1) {
+            for (int y = 0; y < height; y++) {
+                // DMA for second half of rectangle
+                DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col + 1, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
+                // Set pixel for first column (Right side of first 16 bits)
+                setPixel4(col, row + y, colorIndex);
+            }
+        }  else if (width == 1) {
+            // Edge case, a 1 pixel rectangle - can't DMA
+            for (int y = 0; y < height; y++) {
+                setPixel4(col, row + y, colorIndex);
+            }
+        }
 
     } else if ((col & 1) && !(width & 1)) {
-
     // If col is odd but width is even
-    // SetPixel4 for for the beginning (Right side of first 16 bits)
-    // DMA middle of rect
-    // SetPixel4 for the end (Left side of last 16 bits)
-    
+
+        if (width > 2) {
+            for (int y = 0; y < height; y++) {
+                // Set pixel for the first pixel (right byte in first 2 bytes)
+                setPixel4(col, row + y, colorIndex);
+                // DMA middle (must be at least 2 pixels)
+                DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col + 1, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
+                // Set pixel for the last pixel (left byte in last 2 bytes)
+                setPixel4(col + width - 1, row + y, colorIndex);
+            }
+        } else if (width == 2) {
+            for (int y = 0; y < height; y++) {
+                // Set pixel for the first pixel (right byte in first 2 bytes)
+                setPixel4(col, row + y, colorIndex);
+                // Set pixel for the last pixel (left byte in last 2 bytes)
+                setPixel4(col + width - 1, row + y, colorIndex);
+            }
+        }
     }
 
 

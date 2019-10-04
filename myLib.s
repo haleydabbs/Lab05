@@ -113,81 +113,90 @@ drawRect3:
 	.type	drawRect4, %function
 drawRect4:
 	@ Function supports interworking.
-	@ args = 4, pretend = 0, frame = 0
+	@ args = 4, pretend = 0, frame = 8
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, r7, r8, r9, r10, lr}
-	ands	r6, r0, #1
 	mov	ip, r0
-	and	lr, r2, #1
+	push	{r4, r5, r6, r7, r8, r9, r10, lr}
+	sub	sp, sp, #8
+	ldrb	r0, [sp, #40]	@ zero_extendqisi2
+	ldrb	r4, [sp, #40]	@ zero_extendqisi2
+	ands	r6, ip, #1
+	orr	r4, r4, r0, lsl #8
+	strh	r4, [sp, #6]	@ movhi
+	and	r4, r2, #1
 	beq	.L51
-	cmp	lr, #0
+	cmp	r4, #0
 	beq	.L32
 	cmp	r2, #1
 	ble	.L33
 	cmp	r3, #0
 	ble	.L21
-	mov	r4, #0
+	mov	r6, #0
 	ldr	lr, .L52
 	add	r3, r1, r3
-	sub	r2, r2, #1
+	sub	r4, r2, #1
 	rsb	r0, r1, r1, lsl #4
-	asr	r7, r2, #1
+	asr	r4, r4, #1
 	rsb	r3, r3, r3, lsl #4
-	ldr	r6, [lr]
+	ldr	r7, [lr]
 	ldr	r5, [lr, #4]
-	orr	r7, r7, #-2130706432
+	orr	r4, r4, #-2130706432
 	add	lr, ip, r3, lsl #4
 	add	r0, ip, r0, lsl #4
-	add	r1, sp, #32
+	add	r1, sp, #6
 .L34:
 	add	r3, r0, #1
 	add	r3, r3, r3, lsr #31
 	bic	r3, r3, #1
-	add	r3, r6, r3
-	str	r4, [r5, #44]
+	add	r3, r7, r3
+	str	r6, [r5, #44]
 	add	r2, r0, r0, lsr #31
 	str	r1, [r5, #36]
 	str	r3, [r5, #40]
-	str	r7, [r5, #44]
+	str	r4, [r5, #44]
 	bic	r3, r2, #1
-	ldrb	ip, [sp, #32]	@ zero_extendqisi2
-	ldrb	r2, [r6, r3]	@ zero_extendqisi2
+	ldrb	r2, [r7, r3]	@ zero_extendqisi2
+	ldrb	ip, [sp, #40]	@ zero_extendqisi2
 	add	r0, r0, #240
 	orr	r2, r2, ip, lsl #8
 	cmp	lr, r0
-	strh	r2, [r6, r3]	@ movhi
+	strh	r2, [r7, r3]	@ movhi
 	bne	.L34
 .L21:
+	add	sp, sp, #8
+	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
 	bx	lr
 .L51:
-	cmp	lr, #0
+	cmp	r4, #0
 	bne	.L23
 	cmp	r3, #0
 	ble	.L21
 	ldr	r0, .L52
-	add	r2, r2, r2, lsr #31
+	add	r5, r2, r2, lsr #31
 	add	r3, r1, r3
-	asr	r5, r2, #1
+	asr	r5, r5, #1
 	rsb	r1, r1, r1, lsl #4
 	rsb	r3, r3, r3, lsl #4
 	ldr	r6, [r0]
 	ldr	r2, [r0, #4]
 	orr	r5, r5, #-2130706432
 	add	r0, ip, r1, lsl #4
-	add	r4, ip, r3, lsl #4
-	add	r1, sp, #32
+	add	lr, ip, r3, lsl #4
+	add	r1, sp, #6
 .L25:
 	add	r3, r0, r0, lsr #31
 	bic	r3, r3, #1
 	add	r0, r0, #240
 	add	r3, r6, r3
-	cmp	r4, r0
-	str	lr, [r2, #44]
+	cmp	lr, r0
+	str	r4, [r2, #44]
 	str	r1, [r2, #36]
 	str	r3, [r2, #40]
 	str	r5, [r2, #44]
 	bne	.L25
+	add	sp, sp, #8
+	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, lr}
 	bx	lr
 .L23:
@@ -195,20 +204,21 @@ drawRect4:
 	ble	.L27
 	cmp	r3, #0
 	ble	.L21
-	ldr	lr, .L52
-	add	r7, r0, r2
+	ldr	r4, .L52
+	add	r8, ip, r2
 	add	r3, r1, r3
+	sub	lr, r2, #1
 	rsb	r0, r1, r1, lsl #4
-	sub	r7, r7, #1
+	ldr	r5, [r4]
 	rsb	r3, r3, r3, lsl #4
-	ldr	r5, [lr]
-	ldr	r4, [lr, #4]
+	sub	r8, r8, #1
+	asr	r7, lr, #1
+	ldr	r4, [r4, #4]
+	add	r2, ip, r3, lsl #4
 	add	r0, ip, r0, lsl #4
-	add	lr, ip, r3, lsl #4
-	add	r1, sp, #32
-	and	ip, r7, #1
-	orr	r7, r2, #-2130706432
-	sub	r2, r2, #1
+	orr	r7, r7, #-2130706432
+	and	ip, r8, #1
+	add	r1, sp, #6
 .L30:
 	add	r3, r0, r0, lsr #31
 	bic	r3, r3, #1
@@ -216,12 +226,12 @@ drawRect4:
 	str	r6, [r4, #44]
 	str	r1, [r4, #36]
 	str	r3, [r4, #40]
-	add	r3, r2, r0
+	add	r3, lr, r0
 	str	r7, [r4, #44]
 	add	r3, r3, r3, lsr #31
 	bic	r3, r3, #1
 	ldrh	r9, [r5, r3]
-	ldrb	r8, [sp, #32]	@ zero_extendqisi2
+	ldrb	r8, [sp, #40]	@ zero_extendqisi2
 	cmp	ip, #0
 	and	r8, r8, #255
 	and	r10, r9, #255
@@ -229,7 +239,7 @@ drawRect4:
 	andeq	r9, r9, #65280
 	orrne	r8, r10, r8, lsl #8
 	orreq	r8, r9, r8
-	cmp	lr, r0
+	cmp	r2, r0
 	strh	r8, [r5, r3]	@ movhi
 	bne	.L30
 	b	.L21
@@ -238,83 +248,83 @@ drawRect4:
 	ble	.L36
 	cmp	r3, #0
 	ble	.L21
-	ldr	r5, .L52
-	add	r8, r0, r2
+	ldr	r6, .L52
 	add	r3, r1, r3
-	sub	r2, r2, #1
+	add	r8, ip, r2
+	sub	lr, r2, #1
 	rsb	r0, r1, r1, lsl #4
 	rsb	r3, r3, r3, lsl #4
 	sub	r8, r8, #1
-	asr	r9, r2, #1
-	ldm	r5, {r4, r6}
+	asr	r9, lr, #1
+	ldm	r6, {r5, r6}
 	add	r3, ip, r3, lsl #4
 	add	r0, ip, r0, lsl #4
 	and	r8, r8, #1
 	orr	r9, r9, #-2130706432
-	add	r1, sp, #32
+	add	r1, sp, #6
 .L39:
-	add	r5, r0, r0, lsr #31
-	bic	r5, r5, #1
-	add	ip, r0, #1
-	ldrb	r10, [sp, #32]	@ zero_extendqisi2
-	ldrb	r7, [r4, r5]	@ zero_extendqisi2
-	add	ip, ip, ip, lsr #31
+	add	ip, r0, r0, lsr #31
 	bic	ip, ip, #1
+	add	r2, r0, #1
+	ldrb	r7, [r5, ip]	@ zero_extendqisi2
+	ldrb	r10, [sp, #40]	@ zero_extendqisi2
+	add	r2, r2, r2, lsr #31
+	bic	r2, r2, #1
 	orr	r7, r7, r10, lsl #8
-	add	ip, r4, ip
-	strh	r7, [r4, r5]	@ movhi
-	str	lr, [r6, #44]
+	add	r2, r5, r2
+	strh	r7, [r5, ip]	@ movhi
+	str	r4, [r6, #44]
 	str	r1, [r6, #36]
-	str	ip, [r6, #40]
-	add	ip, r2, r0
+	str	r2, [r6, #40]
+	add	r2, lr, r0
 	str	r9, [r6, #44]
-	add	ip, ip, ip, lsr #31
-	bic	ip, ip, #1
-	ldrh	r7, [r4, ip]
-	ldrb	r5, [sp, #32]	@ zero_extendqisi2
+	add	r2, r2, r2, lsr #31
+	bic	r2, r2, #1
+	ldrh	r7, [r5, r2]
+	ldrb	ip, [sp, #40]	@ zero_extendqisi2
 	cmp	r8, #0
-	and	r5, r5, #255
+	and	ip, ip, #255
 	and	r10, r7, #255
 	add	r0, r0, #240
 	andeq	r7, r7, #65280
-	orrne	r5, r10, r5, lsl #8
-	orreq	r5, r7, r5
+	orrne	ip, r10, ip, lsl #8
+	orreq	ip, r7, ip
 	cmp	r3, r0
-	strh	r5, [r4, ip]	@ movhi
+	strh	ip, [r5, r2]	@ movhi
 	bne	.L39
 	b	.L21
 .L36:
 	bne	.L21
 	cmp	r3, #0
 	ble	.L21
-	ldr	r0, .L52
+	ldr	r2, .L52
 	add	r3, r1, r3
 	rsb	r3, r3, r3, lsl #4
 	rsb	r1, r1, r1, lsl #4
-	add	r2, ip, #1
-	ldr	lr, [r0]
+	add	r4, ip, #1
+	ldr	lr, [r2]
 	add	r3, ip, r3, lsl #4
 	add	r0, ip, r1, lsl #4
-	and	ip, r2, #1
+	and	r4, r4, #1
 .L42:
-	add	r2, r0, r0, lsr #31
-	bic	r2, r2, #1
-	ldrb	r4, [sp, #32]	@ zero_extendqisi2
-	ldrb	r1, [lr, r2]	@ zero_extendqisi2
-	orr	r1, r1, r4, lsl #8
-	strh	r1, [lr, r2]	@ movhi
+	add	r1, r0, r0, lsr #31
+	bic	r1, r1, #1
+	ldrb	ip, [lr, r1]	@ zero_extendqisi2
+	ldrb	r2, [sp, #40]	@ zero_extendqisi2
+	orr	ip, ip, r2, lsl #8
 	add	r2, r0, #1
+	strh	ip, [lr, r1]	@ movhi
 	add	r2, r2, r2, lsr #31
 	bic	r2, r2, #1
-	ldrh	r4, [lr, r2]
-	ldrb	r1, [sp, #32]	@ zero_extendqisi2
-	cmp	ip, #0
+	ldrh	ip, [lr, r2]
+	ldrb	r1, [sp, #40]	@ zero_extendqisi2
+	cmp	r4, #0
 	and	r1, r1, #255
-	and	r5, r4, #255
+	and	r5, ip, #255
 	add	r0, r0, #240
-	andeq	r4, r4, #65280
+	andeq	ip, ip, #65280
 	orrne	r1, r5, r1, lsl #8
-	orreq	r1, r4, r1
+	orreq	r1, ip, r1
 	cmp	r3, r0
 	strh	r1, [lr, r2]	@ movhi
 	bne	.L42
@@ -328,11 +338,11 @@ drawRect4:
 	rsb	r3, r3, r3, lsl #4
 	rsb	r1, r1, r1, lsl #4
 	ldr	r4, [r2]
-	add	lr, r0, r3, lsl #4
-	add	r0, r0, r1, lsl #4
+	add	lr, ip, r3, lsl #4
+	add	r0, ip, r1, lsl #4
 .L31:
 	add	r3, r0, r0, lsr #31
-	ldrb	r2, [sp, #32]	@ zero_extendqisi2
+	ldrb	r2, [sp, #40]	@ zero_extendqisi2
 	add	r0, r0, #240
 	bic	r3, r3, #1
 	cmp	lr, r0
@@ -348,13 +358,13 @@ drawRect4:
 	rsb	r3, r3, r3, lsl #4
 	rsb	r1, r1, r1, lsl #4
 	ldr	lr, [r2]
-	add	r4, r0, r3, lsl #4
-	add	r0, r0, r1, lsl #4
+	add	r4, ip, r3, lsl #4
+	add	r0, ip, r1, lsl #4
 .L35:
 	add	r3, r0, r0, lsr #31
 	bic	r3, r3, #1
 	ldrb	r2, [lr, r3]	@ zero_extendqisi2
-	ldrb	r1, [sp, #32]	@ zero_extendqisi2
+	ldrb	r1, [sp, #40]	@ zero_extendqisi2
 	add	r0, r0, #240
 	orr	r2, r2, r1, lsl #8
 	cmp	r4, r0

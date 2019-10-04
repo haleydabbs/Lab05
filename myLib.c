@@ -18,14 +18,16 @@ void setPixel4(int col, int row, unsigned char colorIndex) {
 
     unsigned short pData = videoBuffer[OFFSET(col, row, SCREENWIDTH)/2];
 
+    unsigned short colorWord = colorIndex;
+
     // if odd (pixel on left of the 16 bits)
     if (col & 1) {
         pData &= 0x00FF;
-        pData |= (colorIndex << 8);
+        pData |= (colorWord << 8);
     } // if even (pixel on right of the 16 bits)
     else {
         pData &= 0xFF00;
-        pData |= colorIndex;
+        pData |= colorWord;
     }
 
     videoBuffer[OFFSET(col, row, SCREENWIDTH)/2] = pData;
@@ -44,6 +46,9 @@ void drawRect3(int col, int row, int width, int height, volatile unsigned short 
 void drawRect4(int col, int row, int width, int height, volatile unsigned char colorIndex) {
 
     // TODO 5.0: Write this function using DMA
+    unsigned short colorIndexShort = colorIndex;
+    colorIndexShort <<= 8;
+    colorIndexShort |= colorIndex;
 
     // Width - something (case dependent) is > 1 for DMA length
 
@@ -51,7 +56,7 @@ void drawRect4(int col, int row, int width, int height, volatile unsigned char c
     
         //  If col and width are even - DMA everything no problemo
         for (int y = 0; y < height; y++) {
-            DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | (width/2));
+            DMANow(3, &colorIndexShort, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | (width/2));
         }
 
     } else if (!(col & 1) && (width & 1)) {
@@ -61,7 +66,7 @@ void drawRect4(int col, int row, int width, int height, volatile unsigned char c
         if (width > 1) {
             for (int y = 0; y < height; y++) {
                 // DMA for start of rectangle
-                DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
+                DMANow(3, &colorIndexShort, &videoBuffer[(OFFSET(col, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
                 // SetPixel4 for the last column (Left side of last 16 bits)
                 setPixel4(col + width - 1, row + y, colorIndex);
             }
@@ -79,7 +84,7 @@ void drawRect4(int col, int row, int width, int height, volatile unsigned char c
         if (width > 1) {
             for (int y = 0; y < height; y++) {
                 // DMA for second half of rectangle
-                DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col + 1, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
+                DMANow(3, &colorIndexShort, &videoBuffer[(OFFSET(col + 1, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
                 // Set pixel for first column (Right side of first 16 bits)
                 setPixel4(col, row + y, colorIndex);
             }
@@ -98,7 +103,7 @@ void drawRect4(int col, int row, int width, int height, volatile unsigned char c
                 // Set pixel for the first pixel (right byte in first 2 bytes)
                 setPixel4(col, row + y, colorIndex);
                 // DMA middle (must be at least 2 pixels)
-                DMANow(3, &colorIndex, &videoBuffer[(OFFSET(col + 1, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
+                DMANow(3, &colorIndexShort, &videoBuffer[(OFFSET(col + 1, row + y, SCREENWIDTH)/2)], DMA_SOURCE_FIXED | ((width - 1)/2));
                 // Set pixel for the last pixel (left byte in last 2 bytes)
                 setPixel4(col + width - 1, row + y, colorIndex);
             }
@@ -111,19 +116,6 @@ void drawRect4(int col, int row, int width, int height, volatile unsigned char c
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 // Fill the entire screen with a single color in Mode 3
